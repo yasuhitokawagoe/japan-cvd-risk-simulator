@@ -1,6 +1,7 @@
 # JP Outcomes Prevention Simulator (MVP)
 
 主要アウトカム（MI/Stroke/All-cause mortality）の累積リスク（%）を、外来で取得できる因子（SBP, LDL-C, HbA1c, 喫煙, BMI, CKD）で年次に評価・可視化する Streamlit アプリです。95%CI、年齢減衰、85歳以上の推定域表示に対応。
+URL：https://japan-cvd-risk-simulator.streamlit.app/
 
 ## Quick start
 
