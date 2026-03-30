@@ -11,6 +11,7 @@ st.set_page_config(
 
 st.title("🫀 一次予防リスクシミュレーター（モバイル版）")
 st.caption("将来の心血管リスクと、改善した場合の変化を簡単に確認できます。")
+st.link_button("💻 詳細版（PC版）はこちら", "https://japan-cvd-risk-simulator.streamlit.app/")
 
 engine = OutcomesEngine("config.yaml")
 
