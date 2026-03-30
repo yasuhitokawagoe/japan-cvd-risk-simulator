@@ -11,6 +11,7 @@ st.set_page_config(
 
 st.title("🫀📈 アウトカムベース予防シミュレーター（日本、MVP）")
 st.caption("教育・共有意思決定のため。医療機器ではありません。")
+st.link_button("📱 スマホ版はこちら", "https://japan-cvd-risk-mobile.streamlit.app/")
 
 engine = OutcomesEngine("config.yaml")
 
