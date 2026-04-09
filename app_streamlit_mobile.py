@@ -9,7 +9,8 @@ st.set_page_config(
     page_icon="🫀",
 )
 
-st.title("🫀 一次予防リスクシミュレーター（モバイル版）")
+st.title("🫀 一次予防リスクシミュレーター")
+st.subheader("（モバイル版）")
 st.caption("将来の心血管リスクと、改善した場合の変化を簡単に確認できます。")
 st.link_button("💻 詳細版（PC版）はこちら", "https://japan-cvd-risk-simulator.streamlit.app/")
 
@@ -167,7 +168,7 @@ def figure_mi(cumulative_data, age):
             y=_tg[:cut_idx],
             mode="lines",
             name="目標達成時",
-            line=dict(color="#4ecdc4", width=2),
+            line=dict(color="#10B981", width=2),
             showlegend=False,
             hovertemplate="%{x:.1f}年: %{y:.2f}%<extra></extra>",
         )
@@ -178,7 +179,7 @@ def figure_mi(cumulative_data, age):
             y=_tg[cut_idx:],
             mode="lines",
             name="目標達成時（≥85歳推定域）",
-            line=dict(color="rgba(78,205,196,0.45)", width=2),
+            line=dict(color="rgba(16, 185, 129, 0.45)", width=2),
             showlegend=False,
             hovertemplate="%{x:.1f}年: %{y:.2f}%<extra></extra>",
         )
@@ -225,18 +226,17 @@ def figure_mi(cumulative_data, age):
             mode="lines",
             line=dict(width=0),
             name="目標達成時 95%CI",
-            fillcolor="rgba(78,205,196,0.2)",
+            fillcolor="rgba(16, 185, 129, 0.2)",
             showlegend=False,
         )
     )
     fig.update_layout(
-        title="心筋梗塞・累積リスク（%）",
         xaxis_title="年数",
         yaxis_title="累積リスク（%）",
         height=320,
         showlegend=False,
         hovermode="x unified",
-        margin=dict(l=40, r=20, t=44, b=60),
+        margin=dict(l=40, r=20, t=20, b=40),
     )
     _smooth_main_lines(fig)
     return fig
@@ -256,7 +256,7 @@ def figure_stroke(cumulative_data, age):
             y=_b[:cut_idx],
             mode="lines",
             name="現在のリスク因子",
-            line=dict(color="#ffa726", width=2),
+            line=dict(color="#ff6b6b", width=2),
             showlegend=False,
             hovertemplate="%{x:.1f}年: %{y:.2f}%<extra></extra>",
         )
@@ -267,7 +267,7 @@ def figure_stroke(cumulative_data, age):
             y=_b[cut_idx:],
             mode="lines",
             name="現在のリスク因子（≥85歳推定域）",
-            line=dict(color="rgba(255,167,38,0.45)", width=2),
+            line=dict(color="rgba(255,107,107,0.45)", width=2),
             showlegend=False,
             hovertemplate="%{x:.1f}年: %{y:.2f}%<extra></extra>",
         )
@@ -278,7 +278,7 @@ def figure_stroke(cumulative_data, age):
             y=_tg[:cut_idx],
             mode="lines",
             name="目標達成時",
-            line=dict(color="#66bb6a", width=2),
+            line=dict(color="#10B981", width=2),
             showlegend=False,
             hovertemplate="%{x:.1f}年: %{y:.2f}%<extra></extra>",
         )
@@ -289,7 +289,7 @@ def figure_stroke(cumulative_data, age):
             y=_tg[cut_idx:],
             mode="lines",
             name="目標達成時（≥85歳推定域）",
-            line=dict(color="rgba(102,187,106,0.45)", width=2),
+            line=dict(color="rgba(16, 185, 129, 0.45)", width=2),
             showlegend=False,
             hovertemplate="%{x:.1f}年: %{y:.2f}%<extra></extra>",
         )
@@ -313,7 +313,7 @@ def figure_stroke(cumulative_data, age):
             mode="lines",
             line=dict(width=0),
             name="現在のリスク因子 95%CI",
-            fillcolor="rgba(255,167,38,0.2)",
+            fillcolor="rgba(255,107,107,0.2)",
             showlegend=False,
         )
     )
@@ -336,18 +336,17 @@ def figure_stroke(cumulative_data, age):
             mode="lines",
             line=dict(width=0),
             name="目標達成時 95%CI",
-            fillcolor="rgba(102,187,106,0.2)",
+            fillcolor="rgba(16, 185, 129, 0.2)",
             showlegend=False,
         )
     )
     fig.update_layout(
-        title="脳卒中・累積リスク（%）",
         xaxis_title="年数",
         yaxis_title="累積リスク（%）",
         height=320,
         showlegend=False,
         hovermode="x unified",
-        margin=dict(l=40, r=20, t=44, b=60),
+        margin=dict(l=40, r=20, t=20, b=40),
     )
     _smooth_main_lines(fig)
     return fig
@@ -389,7 +388,7 @@ def figure_mortality(cumulative_data, age):
             y=_tg[:cut_idx],
             mode="lines",
             name="目標達成時",
-            line=dict(color="#26a69a", width=2),
+            line=dict(color="#10B981", width=2),
             showlegend=False,
             hovertemplate="%{x:.1f}年: %{y:.2f}%<extra></extra>",
         )
@@ -400,7 +399,7 @@ def figure_mortality(cumulative_data, age):
             y=_tg[cut_idx:],
             mode="lines",
             name="目標達成時（≥85歳推定域）",
-            line=dict(color="rgba(38,166,154,0.45)", width=2),
+            line=dict(color="rgba(16, 185, 129, 0.45)", width=2),
             showlegend=False,
             hovertemplate="%{x:.1f}年: %{y:.2f}%<extra></extra>",
         )
@@ -447,60 +446,63 @@ def figure_mortality(cumulative_data, age):
             mode="lines",
             line=dict(width=0),
             name="目標達成時 95%CI",
-            fillcolor="rgba(38,166,154,0.2)",
+            fillcolor="rgba(16, 185, 129, 0.2)",
             showlegend=False,
         )
     )
     fig.update_layout(
-        title="全死亡・累積リスク（%）",
         xaxis_title="年数",
         yaxis_title="累積リスク（%）",
         height=320,
         showlegend=False,
         hovermode="x unified",
-        margin=dict(l=40, r=20, t=44, b=60),
+        margin=dict(l=40, r=20, t=20, b=40),
     )
     _smooth_main_lines(fig)
     return fig
 
 
 st.subheader("入力")
-sex = st.selectbox(
-    "性別",
-    ["male", "female"],
-    format_func=lambda x: "男性" if x == "male" else "女性",
-)
-age = st.number_input("年齢（歳）", 20, 95, 60, step=1)
 
-sbp_now = st.slider("収縮期血圧 現在 (mmHg)", 90, 200, 150)
-sbp_tgt = st.slider("収縮期血圧 目標 (mmHg)", 90, 160, 130)
+with st.expander("基本情報", expanded=True):
+    sex = st.selectbox(
+        "性別",
+        ["male", "female"],
+        format_func=lambda x: "男性" if x == "male" else "女性",
+    )
+    age = st.number_input("年齢（歳）", 20, 95, 60, step=1)
 
-ldl_now = st.slider("LDLコレステロール 現在 (mg/dL)", 50, 250, 160)
-ldl_tgt = st.slider("LDLコレステロール 目標 (mg/dL)", 50, 160, 100)
+with st.expander("検査値", expanded=True):
+    sbp_now = st.slider("収縮期血圧 現在 (mmHg)", 90, 200, 150)
+    sbp_tgt = st.slider("収縮期血圧 目標 (mmHg)", 90, 160, 130)
 
-a1c_now = st.slider("HbA1c 現在 (%)", 5.0, 12.0, 8.0, step=0.1)
-a1c_tgt = st.slider("HbA1c 目標 (%)", 5.0, 9.0, 7.0, step=0.1)
+    ldl_now = st.slider("LDLコレステロール 現在 (mg/dL)", 50, 250, 160)
+    ldl_tgt = st.slider("LDLコレステロール 目標 (mg/dL)", 50, 160, 100)
 
-smoking_status = st.selectbox(
-    "喫煙状況",
-    ["never", "current", "former"],
-    format_func=lambda x: {"never": "非喫煙者", "current": "現在喫煙者", "former": "元喫煙者"}[x],
-)
-if smoking_status == "never":
-    cigs_per_day = 0
-    years_smoked = 0.0
-    years_since_quit = 0.0
-    quit_today = False
-elif smoking_status == "current":
-    cigs_per_day = st.slider("1日あたりの喫煙本数", 0, 40, 20)
-    years_smoked = st.slider("喫煙年数", 0, 60, 20)
-    years_since_quit = 0.0
-    quit_today = st.checkbox("今日禁煙したと仮定（目標シナリオ）")
-else:
-    cigs_per_day = st.slider("1日あたりの喫煙本数", 0, 40, 20)
-    years_smoked = st.slider("喫煙年数", 0, 60, 20)
-    years_since_quit = st.slider("禁煙からの年数（元喫煙者の場合）", 0, 40, 5)
-    quit_today = False
+    a1c_now = st.slider("HbA1c 現在 (%)", 5.0, 12.0, 8.0, step=0.1)
+    a1c_tgt = st.slider("HbA1c 目標 (%)", 5.0, 9.0, 7.0, step=0.1)
+
+with st.expander("生活習慣その他", expanded=True):
+    smoking_status = st.selectbox(
+        "喫煙状況",
+        ["never", "current", "former"],
+        format_func=lambda x: {"never": "非喫煙者", "current": "現在喫煙者", "former": "元喫煙者"}[x],
+    )
+    if smoking_status == "never":
+        cigs_per_day = 0
+        years_smoked = 0.0
+        years_since_quit = 0.0
+        quit_today = False
+    elif smoking_status == "current":
+        cigs_per_day = st.slider("1日あたりの喫煙本数", 0, 40, 20)
+        years_smoked = st.slider("喫煙年数", 0, 60, 20)
+        years_since_quit = 0.0
+        quit_today = st.checkbox("今日禁煙したと仮定（目標シナリオ）")
+    else:
+        cigs_per_day = st.slider("1日あたりの喫煙本数", 0, 40, 20)
+        years_smoked = st.slider("喫煙年数", 0, 60, 20)
+        years_since_quit = st.slider("禁煙からの年数（元喫煙者の場合）", 0, 40, 5)
+        quit_today = False
 
 which = st.radio(
     "予測期間",
@@ -559,15 +561,30 @@ for outcome in ["mi", "stroke", "mortality"]:
         assume_quit_today_in_target=quit_today,
     )
 
-st.markdown("#### 結果サマリー")
+st.markdown(f"#### 結果サマリー（{h}年）")
+
 for outcome in ["mi", "stroke", "mortality"]:
     r = r_by_outcome[outcome]
     diff = r["baseline"] - r["target"]
-    st.markdown(
-        f"**{labels[outcome]}**（{h}年）: "
-        f"現在 **{100 * r['baseline']:.1f}%** → 目標 **{100 * r['target']:.1f}%** · "
-        f"差 **{100 * diff:+.1f}%**"
-    )
+    st.markdown(f"""
+    <div style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 15px; margin-bottom: 10px; border: 1px solid #e5e7eb;">
+        <strong style="font-size: 16px; color: #374151; display: block; margin-bottom: 12px;">{labels[outcome]}</strong>
+        <div style="display: flex; justify-content: space-around;">
+            <div style="text-align: center;">
+                <p style="margin: 0; font-size: 14px; color: #6b7280; font-weight: bold;">現在</p>
+                <p style="margin: 0; font-size: 20px; font-weight: bold; color: {'#ff6b6b' if outcome != 'stroke' else '#ff6b6b'};">{100 * r['baseline']:.1f}%</p>
+            </div>
+            <div style="text-align: center;">
+                <p style="margin: 0; font-size: 14px; color: #6b7280; font-weight: bold;">目標</p>
+                <p style="margin: 0; font-size: 20px; font-weight: bold; color: #10B981;">{100 * r['target']:.1f}%</p>
+            </div>
+            <div style="text-align: center;">
+                <p style="margin: 0; font-size: 14px; color: #6b7280; font-weight: bold;">差</p>
+                <p style="margin: 0; font-size: 20px; font-weight: bold; color: #F59E0B;">{100 * diff:+.1f}%</p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 st.divider()
 st.markdown("### 詳細表示")
@@ -579,24 +596,15 @@ detail_blocks = [
 ]
 
 DETAIL_GRAPH_CAPTION = (
-    "🔴 現在のリスク因子　🟢 目標達成時　薄い帯：95%信頼区間　薄い線：85歳以上推定域"
+    "<span style='font-size: 14px;'>🔴 <strong>現在の推移</strong>　🟢 <strong>目標達成時</strong></span><br>"
+    "<span style='font-size: 12px; color: #6b7280;'>※ 薄い帯：95%信頼区間　薄い線：85歳以上の推定域</span>"
 )
 
 for outcome_key, heading, fig_fn in detail_blocks:
-    st.subheader(heading)
+    st.markdown(f"#### {heading} - 将来予測詳細グラフ")
     fig = fig_fn(cumulative_data, age)
-    st.plotly_chart(fig, use_container_width=True)
-    st.caption(DETAIL_GRAPH_CAPTION)
-
-    r = r_by_outcome[outcome_key]
-    diff = r["baseline"] - r["target"]
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        st.metric("現在", f"{100 * r['baseline']:.1f}%")
-    with c2:
-        st.metric("目標", f"{100 * r['target']:.1f}%")
-    with c3:
-        st.metric("差（削減）", f"{100 * diff:.1f}%")
+    st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+    st.markdown(DETAIL_GRAPH_CAPTION, unsafe_allow_html=True)
     st.markdown("---")
 
 with st.expander("簡易注記"):
