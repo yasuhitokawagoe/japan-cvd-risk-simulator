@@ -11,7 +11,6 @@ st.set_page_config(
 
 st.title("🫀 一次予防リスクシミュレーター（モバイル版）")
 st.caption("将来の心血管リスクと、改善した場合の変化を簡単に確認できます。")
-st.link_button("💻 詳細版（PC版）はこちら", "https://japan-cvd-risk-simulator.streamlit.app/")
 
 engine = OutcomesEngine("config.yaml")
 
@@ -35,7 +34,7 @@ def calculate_cumulative_curves():
     calc_years = np.arange(1, years + 1, 1)
     cumulative_data = {}
 
-    for outcome in ["mi", "stroke", "mortality"]:
+    for outcome in ["mortality", "mi", "stroke"]:
         cumulative_data[outcome] = {
             "baseline_cumulative": [],
             "target_cumulative": [],
@@ -91,7 +90,7 @@ def calculate_cumulative_curves():
 
     from scipy.interpolate import make_interp_spline
 
-    for outcome in ["mi", "stroke", "mortality"]:
+    for outcome in ["mortality", "mi", "stroke"]:
         ts = np.array(cumulative_data[outcome]["time"], dtype=float)
         base = np.array(cumulative_data[outcome]["baseline_cumulative"], dtype=float)
         targ = np.array(cumulative_data[outcome]["target_cumulative"], dtype=float)
@@ -540,7 +539,7 @@ h = horizons[0]
 labels = {"mi": "心筋梗塞", "stroke": "脳卒中", "mortality": "全死亡"}
 
 r_by_outcome = {}
-for outcome in ["mi", "stroke", "mortality"]:
+for outcome in ["mortality", "mi", "stroke"]:
     r_by_outcome[outcome] = engine.cumulative_incidence(
         outcome,
         sex,
@@ -560,7 +559,7 @@ for outcome in ["mi", "stroke", "mortality"]:
     )
 
 st.markdown("#### 結果サマリー")
-for outcome in ["mi", "stroke", "mortality"]:
+for outcome in ["mortality", "mi", "stroke"]:
     r = r_by_outcome[outcome]
     diff = r["baseline"] - r["target"]
     st.markdown(
@@ -568,14 +567,16 @@ for outcome in ["mi", "stroke", "mortality"]:
         f"現在 **{100 * r['baseline']:.1f}%** → 目標 **{100 * r['target']:.1f}%** · "
         f"差 **{100 * diff:+.1f}%**"
     )
+    if outcome == "mortality":
+        st.caption("全死亡は、心血管疾患に限らず、がんや他の病気を含むすべての死亡を対象としています。")
 
 st.divider()
 st.markdown("### 詳細表示")
 
 detail_blocks = [
+    ("mortality", "💀 全死亡", figure_mortality),
     ("mi", "🫀 心筋梗塞", figure_mi),
     ("stroke", "🧠 脳卒中", figure_stroke),
-    ("mortality", "💀 全死亡", figure_mortality),
 ]
 
 DETAIL_GRAPH_CAPTION = (
@@ -597,6 +598,8 @@ for outcome_key, heading, fig_fn in detail_blocks:
         st.metric("目標", f"{100 * r['target']:.1f}%")
     with c3:
         st.metric("差（削減）", f"{100 * diff:.1f}%")
+    if outcome_key == "mortality":
+        st.caption("全死亡は、心血管疾患に限らず、がんや他の病気を含むすべての死亡を対象としています。")
     st.markdown("---")
 
 with st.expander("簡易注記"):

@@ -11,7 +11,6 @@ st.set_page_config(
 
 st.title("🫀📈 アウトカムベース予防シミュレーター（日本、MVP）")
 st.caption("教育・共有意思決定のため。医療機器ではありません。")
-st.link_button("📱 スマホ版はこちら", "https://japan-cvd-risk-mobile.streamlit.app/")
 
 engine = OutcomesEngine("config.yaml")
 
@@ -79,7 +78,7 @@ def calculate_cumulative_risk_curves():
     
     cumulative_data = {}
     
-    for outcome in ['mi', 'stroke', 'mortality']:
+    for outcome in ['mortality', 'mi', 'stroke']:
         cumulative_data[outcome] = {
             'baseline_cumulative': [],
             'target_cumulative': [],
@@ -127,7 +126,7 @@ def calculate_cumulative_risk_curves():
     
     # スプライン補間で曲線を滑らかに（年単位→表示用に高密度化）
     from scipy.interpolate import make_interp_spline
-    for outcome in ['mi', 'stroke', 'mortality']:
+    for outcome in ['mortality', 'mi', 'stroke']:
         ts   = np.array(cumulative_data[outcome]['time'], dtype=float)
         base = np.array(cumulative_data[outcome]['baseline_cumulative'], dtype=float)
         targ = np.array(cumulative_data[outcome]['target_cumulative'], dtype=float)
@@ -192,7 +191,7 @@ cols = st.columns(3)
 labels = {'mi':"心筋梗塞", 'stroke':"脳卒中", 'mortality':"全死亡"}
 
 # 簡潔なサマリー表示
-for i, outcome in enumerate(['mi','stroke','mortality']):
+for i, outcome in enumerate(['mortality','mi','stroke']):
     with cols[i]:
         st.subheader(labels[outcome])
         
@@ -207,13 +206,108 @@ for i, outcome in enumerate(['mi','stroke','mortality']):
             risk_reduction = r['baseline'] - r['target']
             st.metric(f"{horizon}年リスク減少", f"{100*risk_reduction:.1f}%", 
                      delta=f"現在: {100*r['baseline']:.1f}% → 目標: {100*r['target']:.1f}%")
+        if outcome == "mortality":
+            st.caption("全死亡は、心血管疾患に限らず、がんや他の病気を含むすべての死亡を対象としています。")
 
 st.divider()
 
 # 累積リスク曲線セクション
 st.markdown("### 📈 累積リスク曲線")
 
-# 1. 心筋梗塞の累積リスク曲線（信頼区間付き）
+# 1. 全死亡の累積リスク曲線（信頼区間付き）
+st.markdown("#### 💀 全死亡の累積リスク曲線（95%信頼区間付き）")
+fig_mortality_cumulative = go.Figure()
+
+# 点推定値の線（85歳以上を薄色表示）
+_mo_t = np.array(cumulative_data['mortality']['time'], dtype=float)
+_mo_b = np.array(cumulative_data['mortality']['baseline_cumulative'], dtype=float)
+_mo_tg = np.array(cumulative_data['mortality']['target_cumulative'], dtype=float)
+cutoff_year = max(0.0, 85.0 - float(age))
+cut_idx = int(np.searchsorted(_mo_t, cutoff_year, side='right'))
+
+fig_mortality_cumulative.add_trace(go.Scatter(
+    x=_mo_t[:cut_idx], y=_mo_b[:cut_idx], mode='lines', name='現在のリスク因子',
+    line=dict(color='#ef5350', width=3), showlegend=True,
+    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
+))
+fig_mortality_cumulative.add_trace(go.Scatter(
+    x=_mo_t[cut_idx:], y=_mo_b[cut_idx:], mode='lines', name='現在のリスク因子（≥85歳推定域）',
+    line=dict(color='rgba(239,83,80,0.45)', width=3), showlegend=False,
+    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
+))
+fig_mortality_cumulative.add_trace(go.Scatter(
+    x=_mo_t[:cut_idx], y=_mo_tg[:cut_idx], mode='lines', name='目標達成時',
+    line=dict(color='#26a69a', width=3), showlegend=True,
+    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
+))
+fig_mortality_cumulative.add_trace(go.Scatter(
+    x=_mo_t[cut_idx:], y=_mo_tg[cut_idx:], mode='lines', name='目標達成時（≥85歳推定域）',
+    line=dict(color='rgba(38,166,154,0.45)', width=3), showlegend=False,
+    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
+))
+
+# 現在のリスク因子の信頼区間帯
+fig_mortality_cumulative.add_trace(go.Scatter(
+    x=cumulative_data['mortality']['time'],
+    y=cumulative_data['mortality']['baseline_ci_upper'],
+    fill=None,
+    mode='lines',
+    line=dict(width=0),
+    showlegend=False,
+    hoverinfo="skip"
+))
+
+fig_mortality_cumulative.add_trace(go.Scatter(
+    x=cumulative_data['mortality']['time'],
+    y=cumulative_data['mortality']['baseline_ci_lower'],
+    fill='tonexty',
+    mode='lines',
+    line=dict(width=0),
+    name='現在のリスク因子 95%CI',
+    fillcolor='rgba(239,83,80,0.2)'
+))
+
+# 目標達成時の信頼区間帯
+fig_mortality_cumulative.add_trace(go.Scatter(
+    x=cumulative_data['mortality']['time'],
+    y=cumulative_data['mortality']['target_ci_upper'],
+    fill=None,
+    mode='lines',
+    line=dict(width=0),
+    showlegend=False,
+    hoverinfo="skip"
+))
+
+fig_mortality_cumulative.add_trace(go.Scatter(
+    x=cumulative_data['mortality']['time'],
+    y=cumulative_data['mortality']['target_ci_lower'],
+    fill='tonexty',
+    mode='lines',
+    line=dict(width=0),
+    name='目標達成時 95%CI',
+    fillcolor='rgba(38,166,154,0.2)'
+))
+
+fig_mortality_cumulative.update_layout(
+    title="全死亡の累積リスク曲線（95%信頼区間付き）",
+    xaxis_title="年数",
+    yaxis_title="累積リスク（%）",
+    height=500,
+    showlegend=True,
+    hovermode='x unified'
+)
+
+# 線を滑らかにする設定
+for trace in fig_mortality_cumulative.data:
+    if trace.mode == 'lines' and hasattr(trace, 'name') and trace.name and '95%CI' not in trace.name:
+        # メインの線のみを滑らかに（信頼区間帯は除外）
+        trace.update(line=dict(smoothing=1.0, shape='spline'))
+
+st.plotly_chart(fig_mortality_cumulative, use_container_width=True)
+st.caption("全死亡は、心血管疾患に限らず、がんや他の病気を含むすべての死亡を対象としています。")
+
+
+# 2. 心筋梗塞の累積リスク曲線（信頼区間付き）
 st.markdown("#### 🫀 心筋梗塞の累積リスク曲線（95%信頼区間付き）")
 fig_mi_cumulative = go.Figure()
 
@@ -308,7 +402,7 @@ for trace in fig_mi_cumulative.data:
 
 st.plotly_chart(fig_mi_cumulative, use_container_width=True)
 
-# 2. 脳卒中の累積リスク曲線（信頼区間付き）
+# 3. 脳卒中の累積リスク曲線（信頼区間付き）
 st.markdown("#### 🧠 脳卒中の累積リスク曲線（95%信頼区間付き）")
 fig_stroke_cumulative = go.Figure()
 
@@ -398,97 +492,6 @@ for trace in fig_stroke_cumulative.data:
         trace.update(line=dict(smoothing=1.0, shape='spline'))
 
 st.plotly_chart(fig_stroke_cumulative, use_container_width=True)
-
-# 3. 全死亡の累積リスク曲線（信頼区間付き）
-st.markdown("#### 💀 全死亡の累積リスク曲線（95%信頼区間付き）")
-fig_mortality_cumulative = go.Figure()
-
-# 点推定値の線（85歳以上を薄色表示）
-_mo_t = np.array(cumulative_data['mortality']['time'], dtype=float)
-_mo_b = np.array(cumulative_data['mortality']['baseline_cumulative'], dtype=float)
-_mo_tg = np.array(cumulative_data['mortality']['target_cumulative'], dtype=float)
-cutoff_year = max(0.0, 85.0 - float(age))
-cut_idx = int(np.searchsorted(_mo_t, cutoff_year, side='right'))
-
-fig_mortality_cumulative.add_trace(go.Scatter(
-    x=_mo_t[:cut_idx], y=_mo_b[:cut_idx], mode='lines', name='現在のリスク因子',
-    line=dict(color='#ef5350', width=3), showlegend=True,
-    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
-))
-fig_mortality_cumulative.add_trace(go.Scatter(
-    x=_mo_t[cut_idx:], y=_mo_b[cut_idx:], mode='lines', name='現在のリスク因子（≥85歳推定域）',
-    line=dict(color='rgba(239,83,80,0.45)', width=3), showlegend=False,
-    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
-))
-fig_mortality_cumulative.add_trace(go.Scatter(
-    x=_mo_t[:cut_idx], y=_mo_tg[:cut_idx], mode='lines', name='目標達成時',
-    line=dict(color='#26a69a', width=3), showlegend=True,
-    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
-))
-fig_mortality_cumulative.add_trace(go.Scatter(
-    x=_mo_t[cut_idx:], y=_mo_tg[cut_idx:], mode='lines', name='目標達成時（≥85歳推定域）',
-    line=dict(color='rgba(38,166,154,0.45)', width=3), showlegend=False,
-    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
-))
-
-# 現在のリスク因子の信頼区間帯
-fig_mortality_cumulative.add_trace(go.Scatter(
-    x=cumulative_data['mortality']['time'],
-    y=cumulative_data['mortality']['baseline_ci_upper'],
-    fill=None,
-    mode='lines',
-    line=dict(width=0),
-    showlegend=False,
-    hoverinfo="skip"
-))
-
-fig_mortality_cumulative.add_trace(go.Scatter(
-    x=cumulative_data['mortality']['time'],
-    y=cumulative_data['mortality']['baseline_ci_lower'],
-    fill='tonexty',
-    mode='lines',
-    line=dict(width=0),
-    name='現在のリスク因子 95%CI',
-    fillcolor='rgba(239,83,80,0.2)'
-))
-
-# 目標達成時の信頼区間帯
-fig_mortality_cumulative.add_trace(go.Scatter(
-    x=cumulative_data['mortality']['time'],
-    y=cumulative_data['mortality']['target_ci_upper'],
-    fill=None,
-    mode='lines',
-    line=dict(width=0),
-    showlegend=False,
-    hoverinfo="skip"
-))
-
-fig_mortality_cumulative.add_trace(go.Scatter(
-    x=cumulative_data['mortality']['time'],
-    y=cumulative_data['mortality']['target_ci_lower'],
-    fill='tonexty',
-    mode='lines',
-    line=dict(width=0),
-    name='目標達成時 95%CI',
-    fillcolor='rgba(38,166,154,0.2)'
-))
-
-fig_mortality_cumulative.update_layout(
-    title="全死亡の累積リスク曲線（95%信頼区間付き）",
-    xaxis_title="年数",
-    yaxis_title="累積リスク（%）",
-    height=500,
-    showlegend=True,
-    hovermode='x unified'
-)
-
-# 線を滑らかにする設定
-for trace in fig_mortality_cumulative.data:
-    if trace.mode == 'lines' and hasattr(trace, 'name') and trace.name and '95%CI' not in trace.name:
-        # メインの線のみを滑らかに（信頼区間帯は除外）
-        trace.update(line=dict(smoothing=1.0, shape='spline'))
-
-st.plotly_chart(fig_mortality_cumulative, use_container_width=True)
 
 st.divider()
 with st.expander("出典・注記"):
