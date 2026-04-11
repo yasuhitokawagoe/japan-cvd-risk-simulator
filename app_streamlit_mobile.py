@@ -539,7 +539,13 @@ else:
     horizons = [50]
 
 h = horizons[0]
-labels = {"mi": "心筋梗塞", "stroke": "脳卒中", "mortality": "全死亡"}
+# labels = {"mi": "心筋梗塞", "stroke": "脳卒中", "mortality": "全死亡"}
+
+labels = {
+    "mi": "心筋梗塞",
+    "stroke": "脳卒中",
+    "mortality": "全死亡 <span style='font-size: 11px; font-weight: normal; color: #6b7280; margin-left: 8px;'>※死亡は癌や寿命など全ての疾患を含みます</span>"
+}
 
 r_by_outcome = {}
 for outcome in ["mi", "stroke", "mortality"]:
@@ -563,11 +569,12 @@ for outcome in ["mi", "stroke", "mortality"]:
 
 st.markdown(f"#### 結果サマリー（{h}年）")
 
-for outcome in ["mi", "stroke", "mortality"]:
+for outcome in ["mortality", "mi", "stroke"]:
     r = r_by_outcome[outcome]
     diff = r["baseline"] - r["target"]
     st.markdown(f"""
-    <div style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 15px; margin-bottom: 10px; border: 1px solid #e5e7eb;">
+    <div style="background-color: #ffffff; border-radius: 8px; box-s
+    hadow: 0 2px 4px rgba(0,0,0,0.05); padding: 15px; margin-bottom: 10px; border: 1px solid #e5e7eb;">
         <strong style="font-size: 16px; color: #374151; display: block; margin-bottom: 12px;">{labels[outcome]}</strong>
         <div style="display: flex; justify-content: space-around;">
             <div style="text-align: center;">
@@ -590,9 +597,9 @@ st.divider()
 st.markdown("### 詳細表示")
 
 detail_blocks = [
+    ("mortality", "💀 全死亡", figure_mortality),
     ("mi", "🫀 心筋梗塞", figure_mi),
     ("stroke", "🧠 脳卒中", figure_stroke),
-    ("mortality", "💀 全死亡", figure_mortality),
 ]
 
 DETAIL_GRAPH_CAPTION = (
