@@ -14,27 +14,65 @@ st.caption("教育・共有意思決定のため。医療機器ではありま�
 
 engine = OutcomesEngine("config.yaml")
 
+
+def _bump(key, delta, lo, hi):
+    """クイック調整ボタン用：session_state の値を増減し範囲内に丸める。UIのみ。"""
+    new = st.session_state[key] + delta
+    new = max(lo, min(hi, new))
+    if isinstance(st.session_state[key], float):
+        new = round(new, 1)
+    st.session_state[key] = new
+
+
+_input_defaults = {
+    "sbp_now": 150,
+    "sbp_tgt": 130,
+    "ldl_now": 180,
+    "ldl_tgt": 100,
+    "a1c_now": 7.0,
+    "a1c_tgt": 6.5,
+    "cigs_per_day": 20,
+    "years_smoked": 20,
+    "years_since_quit": 5,
+}
+for _k, _v in _input_defaults.items():
+    if _k not in st.session_state:
+        st.session_state[_k] = _v
+
 with st.sidebar:
     st.subheader("患者プロフィール")
     sex = st.selectbox("性別", ["male","female"], format_func=lambda x: "男性" if x == "male" else "女性")
     age = st.number_input("年齢（歳）", 20, 95, 60, step=1)
 
     st.subheader("リスク因子（現在 → 目標）")
-    sbp_now = st.slider("収縮期血圧 現在 (mmHg)", 90, 200, 150)
-    sbp_tgt = st.slider("収縮期血圧 目標 (mmHg)", 90, 160, 130)
 
-    ldl_now = st.slider("LDLコレステロール 現在 (mg/dL)", 50, 250, 160)
-    ldl_tgt = st.slider("LDLコレステロール 目標 (mg/dL)", 50, 160, 100)
+    st.markdown("**収縮期血圧 (mmHg)**")
+    sbp_now = st.number_input("現在", min_value=90, max_value=240, step=10, key="sbp_now")
+    sbp_tgt = st.number_input("目標", min_value=90, max_value=240, step=10, key="sbp_tgt")
+    sbtn1, sbtn2 = st.columns(2)
+    sbtn1.button("目標 −10", key="sbp_m10", on_click=_bump, args=("sbp_tgt", -10, 90, 240), use_container_width=True)
+    sbtn2.button("目標 ＋10", key="sbp_p10", on_click=_bump, args=("sbp_tgt", 10, 90, 240), use_container_width=True)
 
-    a1c_now = st.slider("HbA1c 現在 (%)", 5.0, 12.0, 8.0, step=0.1)
-    a1c_tgt = st.slider("HbA1c 目標 (%)", 5.0, 9.0, 7.0, step=0.1)
+    st.markdown("**LDLコレステロール (mg/dL)**")
+    ldl_now = st.number_input("現在", min_value=40, max_value=300, step=10, key="ldl_now")
+    ldl_tgt = st.number_input("目標", min_value=40, max_value=300, step=10, key="ldl_tgt")
+    lbtn1, lbtn2 = st.columns(2)
+    lbtn1.button("目標 −30", key="ldl_m30", on_click=_bump, args=("ldl_tgt", -30, 40, 300), use_container_width=True)
+    lbtn2.button("目標 −50", key="ldl_m50", on_click=_bump, args=("ldl_tgt", -50, 40, 300), use_container_width=True)
+
+    st.markdown("**HbA1c (%)**")
+    a1c_now = st.number_input("現在", min_value=5.0, max_value=12.0, step=0.5, key="a1c_now")
+    a1c_tgt = st.number_input("目標", min_value=5.0, max_value=12.0, step=0.5, key="a1c_tgt")
+    abtn1, abtn2 = st.columns(2)
+    abtn1.button("目標 −0.5", key="a1c_m05", on_click=_bump, args=("a1c_tgt", -0.5, 5.0, 12.0), use_container_width=True)
+    abtn2.button("目標 −1.0", key="a1c_m10", on_click=_bump, args=("a1c_tgt", -1.0, 5.0, 12.0), use_container_width=True)
 
     st.subheader("喫煙状況")
     smoking_status = st.selectbox("状況", ["never","current","former"], 
                                  format_func=lambda x: {"never": "非喫煙者", "current": "現在喫煙者", "former": "元喫煙者"}[x])
-    cigs_per_day = st.slider("1日あたりの喫煙本数", 0, 40, 20)
-    years_smoked = st.slider("喫煙年数", 0, 60, 20)
-    years_since_quit = st.slider("禁煙からの年数（元喫煙者の場合）", 0, 40, 5)
+    cigs_per_day = st.number_input("1日あたりの喫煙本数", min_value=0, max_value=40, step=1, key="cigs_per_day")
+    years_smoked = st.number_input("喫煙年数", min_value=0, max_value=60, step=1, key="years_smoked")
+    years_since_quit = st.number_input("禁煙からの年数（元喫煙者の場合）", min_value=0, max_value=40, step=1, key="years_since_quit")
     quit_today = st.checkbox("今日禁煙したと仮定（目標シナリオ）")
 
     st.subheader("BMI（任意）")
