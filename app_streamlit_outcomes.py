@@ -9,7 +9,7 @@ st.set_page_config(
     page_icon="🫀"
 )
 
-st.title("🫀📈 アウトカムベース予防シミュレーター（日本、MVP）")
+st.title("🫀📈 日本版心血管リスク予測シュミレーター")
 st.caption("教育・共有意思決定のため。医療機器ではありません。")
 
 engine = OutcomesEngine("config.yaml")
