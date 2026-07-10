@@ -10,7 +10,7 @@ st.set_page_config(
 )
 
 st.title("🫀📈 日本版心血管リスク予測シュミレーター")
-st.caption("教育・共有意思決定のため。医療機器ではありません。")
+st.caption("教育・共有意思決定のため。医療機器ではありません。薬剤版：https://japan-cvd-risk-simulator-meds-fm.streamlit.app/")
 
 engine = OutcomesEngine("config.yaml")
 
