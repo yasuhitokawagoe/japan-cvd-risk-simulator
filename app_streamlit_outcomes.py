@@ -9,7 +9,7 @@ st.set_page_config(
     page_icon="🫀"
 )
 
-st.title("🫀📈 Japan Cardiovascular Risk Prediction Simulator")
+st.title("🫀📈 Cardiovascular Risk Prediction Simulator")
 st.caption("For education and shared decision-making. This is not a medical device. Medication version: https://japan-cvd-risk-simulator-meds-fm.streamlit.app/")
 
 engine = OutcomesEngine("config.yaml")
