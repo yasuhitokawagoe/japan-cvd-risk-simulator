@@ -9,51 +9,51 @@ st.set_page_config(
     page_icon="🫀"
 )
 
-st.title("🫀📈 日本版心血管リスク予測シュミレーター")
-st.caption("教育・共有意思決定のため。医療機器ではありません。薬剤版：https://japan-cvd-risk-simulator-meds-fm.streamlit.app/")
+st.title("🫀📈 Japan Cardiovascular Risk Prediction Simulator")
+st.caption("For education and shared decision-making. This is not a medical device. Medication version: https://japan-cvd-risk-simulator-meds-fm.streamlit.app/")
 
 engine = OutcomesEngine("config.yaml")
 
 with st.sidebar:
-    st.subheader("患者プロフィール")
-    sex = st.selectbox("性別", ["male","female"], format_func=lambda x: "男性" if x == "male" else "女性")
-    age = st.number_input("年齢（歳）", 20, 95, 60, step=1)
+    st.subheader("Patient Profile")
+    sex = st.selectbox("Sex", ["male","female"], format_func=lambda x: "Male" if x == "male" else "Female")
+    age = st.number_input("Age (years)", 20, 95, 60, step=1)
 
-    st.subheader("リスク因子（現在 → 目標）")
-    sbp_now = st.slider("収縮期血圧 現在 (mmHg)", 90, 200, 150)
-    sbp_tgt = st.slider("収縮期血圧 目標 (mmHg)", 90, 160, 130)
+    st.subheader("Risk Factors (Current → Target)")
+    sbp_now = st.slider("Current systolic blood pressure (mmHg)", 90, 200, 150)
+    sbp_tgt = st.slider("Target systolic blood pressure (mmHg)", 90, 160, 130)
 
-    ldl_now = st.slider("LDLコレステロール 現在 (mg/dL)", 50, 250, 160)
-    ldl_tgt = st.slider("LDLコレステロール 目標 (mg/dL)", 50, 160, 100)
+    ldl_now = st.slider("Current LDL cholesterol (mg/dL)", 50, 250, 160)
+    ldl_tgt = st.slider("Target LDL cholesterol (mg/dL)", 50, 160, 100)
 
-    a1c_now = st.slider("HbA1c 現在 (%)", 5.0, 12.0, 8.0, step=0.1)
-    a1c_tgt = st.slider("HbA1c 目標 (%)", 5.0, 9.0, 7.0, step=0.1)
+    a1c_now = st.slider("Current HbA1c (%)", 5.0, 12.0, 8.0, step=0.1)
+    a1c_tgt = st.slider("Target HbA1c (%)", 5.0, 9.0, 7.0, step=0.1)
 
-    st.subheader("喫煙状況")
-    smoking_status = st.selectbox("状況", ["never","current","former"], 
-                                 format_func=lambda x: {"never": "非喫煙者", "current": "現在喫煙者", "former": "元喫煙者"}[x])
-    cigs_per_day = st.slider("1日あたりの喫煙本数", 0, 40, 20)
-    years_smoked = st.slider("喫煙年数", 0, 60, 20)
-    years_since_quit = st.slider("禁煙からの年数（元喫煙者の場合）", 0, 40, 5)
-    quit_today = st.checkbox("今日禁煙したと仮定（目標シナリオ）")
+    st.subheader("Smoking Status")
+    smoking_status = st.selectbox("Status", ["never","current","former"],
+                                 format_func=lambda x: {"never": "Never smoked", "current": "Current smoker", "former": "Former smoker"}[x])
+    cigs_per_day = st.slider("Cigarettes per day", 0, 40, 20)
+    years_smoked = st.slider("Years smoked", 0, 60, 20)
+    years_since_quit = st.slider("Years since quitting (former smokers)", 0, 40, 5)
+    quit_today = st.checkbox("Assume quitting today (target scenario)")
 
-    st.subheader("BMI（任意）")
+    st.subheader("BMI (optional)")
     col_b1, col_b2 = st.columns(2)
     with col_b1:
-        bmi_now = st.number_input("現在のBMI", min_value=10.0, max_value=50.0, value=24.0, step=0.1)
+        bmi_now = st.number_input("Current BMI", min_value=10.0, max_value=50.0, value=24.0, step=0.1)
     with col_b2:
-        bmi_target = st.number_input("目標BMI（任意）", min_value=10.0, max_value=50.0, value=24.0, step=0.1)
+        bmi_target = st.number_input("Target BMI (optional)", min_value=10.0, max_value=50.0, value=24.0, step=0.1)
 
-    st.subheader("CKD（任意）")
-    egfr_now = st.number_input("eGFR 現在 (mL/min/1.73m²)", min_value=5.0, max_value=120.0, value=80.0, step=1.0)
-    egfr_target = st.number_input("eGFR 目標（任意）", min_value=5.0, max_value=120.0, value=80.0, step=1.0)
-    acr_now = st.selectbox("尿アルブミン/蛋白（現在）", ["A1","A2","A3"], index=0,
-                           help="A1: 正常/陰性, A2: 微量, A3: 顕性")
-    acr_target = st.selectbox("尿アルブミン/蛋白（目標・任意）", ["A1","A2","A3"], index=0)
+    st.subheader("CKD (optional)")
+    egfr_now = st.number_input("Current eGFR (mL/min/1.73m²)", min_value=5.0, max_value=120.0, value=80.0, step=1.0)
+    egfr_target = st.number_input("Target eGFR (optional)", min_value=5.0, max_value=120.0, value=80.0, step=1.0)
+    acr_now = st.selectbox("Current urine albumin/protein category", ["A1","A2","A3"], index=0,
+                           help="A1: normal/negative, A2: moderately increased, A3: severely increased")
+    acr_target = st.selectbox("Target urine albumin/protein category (optional)", ["A1","A2","A3"], index=0)
 
-    st.subheader("予測期間")
-    which = st.radio("期間を選択", ["5-year","10-year","20-year","30-year","50-year","Both"], index=2,
-                     format_func=lambda x: {"5-year": "5年", "10-year": "10年", "20-year": "20年", "30-year": "30年", "50-year": "50年", "Both": "両方"}[x])
+    st.subheader("Prediction Horizon")
+    which = st.radio("Select a time horizon", ["5-year","10-year","20-year","30-year","50-year","Both"], index=2,
+                     format_func=lambda x: {"5-year": "5 years", "10-year": "10 years", "20-year": "20 years", "30-year": "30 years", "50-year": "50 years", "Both": "5 and 10 years"}[x])
 
 def pct(x): return f"{100*x:.1f}%"
 
@@ -161,7 +161,7 @@ if 'calculated' not in st.session_state:
     st.session_state.cumulative_data = None
 
 # 計算ボタン
-if st.button("🔄 リスク計算を実行", type="primary"):
+if st.button("🔄 Calculate Risk", type="primary"):
     cumulative_data = calculate_cumulative_risk_curves()
     st.session_state.cumulative_data = cumulative_data
     st.session_state.calculated = True
@@ -170,7 +170,7 @@ if st.button("🔄 リスク計算を実行", type="primary"):
 if st.session_state.calculated and st.session_state.cumulative_data is not None:
     cumulative_data = st.session_state.cumulative_data
 else:
-    st.info("👆 上記のパラメータを設定して「リスク計算を実行」ボタンを押してください")
+    st.info("👆 Set the parameters above, then select Calculate Risk.")
     st.stop()
 if which == "Both":
     horizons = [5, 10]
@@ -186,9 +186,9 @@ elif which == "50-year":
     horizons = [50]
 
 # メイン結果表示
-st.markdown("### 📊 リスク比較サマリー")
+st.markdown("### 📊 Risk Comparison Summary")
 cols = st.columns(3)
-labels = {'mi':"心筋梗塞", 'stroke':"脳卒中", 'mortality':"全死亡"}
+labels = {'mi':"Myocardial Infarction", 'stroke':"Stroke", 'mortality':"All-Cause Mortality"}
 
 # 簡潔なサマリー表示
 for i, outcome in enumerate(['mortality','mi','stroke']):
@@ -204,18 +204,18 @@ for i, outcome in enumerate(['mortality','mi','stroke']):
             
             # リスク減少の効果を強調
             risk_reduction = r['baseline'] - r['target']
-            st.metric(f"{horizon}年リスク減少", f"{100*risk_reduction:.1f}%", 
-                     delta=f"現在: {100*r['baseline']:.1f}% → 目標: {100*r['target']:.1f}%")
+            st.metric(f"{horizon}-Year Absolute Risk Reduction", f"{100*risk_reduction:.1f}%",
+                     delta=f"Current: {100*r['baseline']:.1f}% → Target: {100*r['target']:.1f}%")
         if outcome == "mortality":
-            st.caption("全死亡は、心血管疾患に限らず、がんや他の病気を含むすべての死亡を対象としています。")
+            st.caption("All-cause mortality includes deaths from any cause, including cancer and other diseases, not only cardiovascular disease.")
 
 st.divider()
 
 # 累積リスク曲線セクション
-st.markdown("### 📈 累積リスク曲線")
+st.markdown("### 📈 Cumulative Risk Curves")
 
 # 1. 全死亡の累積リスク曲線（信頼区間付き）
-st.markdown("#### 💀 全死亡の累積リスク曲線（95%信頼区間付き）")
+st.markdown("#### 💀 Cumulative Risk of All-Cause Mortality (95% CI)")
 fig_mortality_cumulative = go.Figure()
 
 # 点推定値の線（85歳以上を薄色表示）
@@ -226,24 +226,24 @@ cutoff_year = max(0.0, 85.0 - float(age))
 cut_idx = int(np.searchsorted(_mo_t, cutoff_year, side='right'))
 
 fig_mortality_cumulative.add_trace(go.Scatter(
-    x=_mo_t[:cut_idx], y=_mo_b[:cut_idx], mode='lines', name='現在のリスク因子',
+    x=_mo_t[:cut_idx], y=_mo_b[:cut_idx], mode='lines', name='Current risk factors',
     line=dict(color='#ef5350', width=3), showlegend=True,
-    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
+    hovertemplate='%{x:.1f} years: %{y:.2f}%<extra></extra>'
 ))
 fig_mortality_cumulative.add_trace(go.Scatter(
-    x=_mo_t[cut_idx:], y=_mo_b[cut_idx:], mode='lines', name='現在のリスク因子（≥85歳推定域）',
+    x=_mo_t[cut_idx:], y=_mo_b[cut_idx:], mode='lines', name='Current risk factors (estimated range: age ≥85)',
     line=dict(color='rgba(239,83,80,0.45)', width=3), showlegend=False,
-    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
+    hovertemplate='%{x:.1f} years: %{y:.2f}%<extra></extra>'
 ))
 fig_mortality_cumulative.add_trace(go.Scatter(
-    x=_mo_t[:cut_idx], y=_mo_tg[:cut_idx], mode='lines', name='目標達成時',
+    x=_mo_t[:cut_idx], y=_mo_tg[:cut_idx], mode='lines', name='At target',
     line=dict(color='#26a69a', width=3), showlegend=True,
-    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
+    hovertemplate='%{x:.1f} years: %{y:.2f}%<extra></extra>'
 ))
 fig_mortality_cumulative.add_trace(go.Scatter(
-    x=_mo_t[cut_idx:], y=_mo_tg[cut_idx:], mode='lines', name='目標達成時（≥85歳推定域）',
+    x=_mo_t[cut_idx:], y=_mo_tg[cut_idx:], mode='lines', name='At target (estimated range: age ≥85)',
     line=dict(color='rgba(38,166,154,0.45)', width=3), showlegend=False,
-    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
+    hovertemplate='%{x:.1f} years: %{y:.2f}%<extra></extra>'
 ))
 
 # 現在のリスク因子の信頼区間帯
@@ -263,7 +263,7 @@ fig_mortality_cumulative.add_trace(go.Scatter(
     fill='tonexty',
     mode='lines',
     line=dict(width=0),
-    name='現在のリスク因子 95%CI',
+    name='Current risk factors 95% CI',
     fillcolor='rgba(239,83,80,0.2)'
 ))
 
@@ -284,14 +284,14 @@ fig_mortality_cumulative.add_trace(go.Scatter(
     fill='tonexty',
     mode='lines',
     line=dict(width=0),
-    name='目標達成時 95%CI',
+    name='At target 95% CI',
     fillcolor='rgba(38,166,154,0.2)'
 ))
 
 fig_mortality_cumulative.update_layout(
-    title="全死亡の累積リスク曲線（95%信頼区間付き）",
-    xaxis_title="年数",
-    yaxis_title="累積リスク（%）",
+    title="Cumulative Risk of All-Cause Mortality (95% CI)",
+    xaxis_title="Years",
+    yaxis_title="Cumulative risk (%)",
     height=500,
     showlegend=True,
     hovermode='x unified'
@@ -304,11 +304,11 @@ for trace in fig_mortality_cumulative.data:
         trace.update(line=dict(smoothing=1.0, shape='spline'))
 
 st.plotly_chart(fig_mortality_cumulative, use_container_width=True)
-st.caption("全死亡は、心血管疾患に限らず、がんや他の病気を含むすべての死亡を対象としています。")
+st.caption("All-cause mortality includes deaths from any cause, including cancer and other diseases, not only cardiovascular disease.")
 
 
 # 2. 心筋梗塞の累積リスク曲線（信頼区間付き）
-st.markdown("#### 🫀 心筋梗塞の累積リスク曲線（95%信頼区間付き）")
+st.markdown("#### 🫀 Cumulative Risk of Myocardial Infarction (95% CI)")
 fig_mi_cumulative = go.Figure()
 
 # 点推定値の線（85歳以上を薄色表示）
@@ -320,27 +320,27 @@ cut_idx = int(np.searchsorted(_mi_t, cutoff_year, side='right'))
 
 # baseline: ～85歳
 fig_mi_cumulative.add_trace(go.Scatter(
-    x=_mi_t[:cut_idx], y=_mi_b[:cut_idx], mode='lines', name='現在のリスク因子',
+    x=_mi_t[:cut_idx], y=_mi_b[:cut_idx], mode='lines', name='Current risk factors',
     line=dict(color='#ff6b6b', width=3), showlegend=True,
-    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
+    hovertemplate='%{x:.1f} years: %{y:.2f}%<extra></extra>'
 ))
 # baseline: 85歳～（薄色）
 fig_mi_cumulative.add_trace(go.Scatter(
-    x=_mi_t[cut_idx:], y=_mi_b[cut_idx:], mode='lines', name='現在のリスク因子（≥85歳推定域）',
+    x=_mi_t[cut_idx:], y=_mi_b[cut_idx:], mode='lines', name='Current risk factors (estimated range: age ≥85)',
     line=dict(color='rgba(255,107,107,0.45)', width=3), showlegend=False,
-    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
+    hovertemplate='%{x:.1f} years: %{y:.2f}%<extra></extra>'
 ))
 # target: ～85歳
 fig_mi_cumulative.add_trace(go.Scatter(
-    x=_mi_t[:cut_idx], y=_mi_tg[:cut_idx], mode='lines', name='目標達成時',
+    x=_mi_t[:cut_idx], y=_mi_tg[:cut_idx], mode='lines', name='At target',
     line=dict(color='#4ecdc4', width=3), showlegend=True,
-    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
+    hovertemplate='%{x:.1f} years: %{y:.2f}%<extra></extra>'
 ))
 # target: 85歳～（薄色）
 fig_mi_cumulative.add_trace(go.Scatter(
-    x=_mi_t[cut_idx:], y=_mi_tg[cut_idx:], mode='lines', name='目標達成時（≥85歳推定域）',
+    x=_mi_t[cut_idx:], y=_mi_tg[cut_idx:], mode='lines', name='At target (estimated range: age ≥85)',
     line=dict(color='rgba(78,205,196,0.45)', width=3), showlegend=False,
-    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
+    hovertemplate='%{x:.1f} years: %{y:.2f}%<extra></extra>'
 ))
 
 # 現在のリスク因子の信頼区間帯
@@ -360,7 +360,7 @@ fig_mi_cumulative.add_trace(go.Scatter(
     fill='tonexty',
     mode='lines',
     line=dict(width=0),
-    name='現在のリスク因子 95%CI',
+    name='Current risk factors 95% CI',
     fillcolor='rgba(255,107,107,0.2)'
 ))
 
@@ -381,14 +381,14 @@ fig_mi_cumulative.add_trace(go.Scatter(
     fill='tonexty',
     mode='lines',
     line=dict(width=0),
-    name='目標達成時 95%CI',
+    name='At target 95% CI',
     fillcolor='rgba(78,205,196,0.2)'
 ))
 
 fig_mi_cumulative.update_layout(
-    title="心筋梗塞の累積リスク曲線（95%信頼区間付き）",
-    xaxis_title="年数",
-    yaxis_title="累積リスク（%）",
+    title="Cumulative Risk of Myocardial Infarction (95% CI)",
+    xaxis_title="Years",
+    yaxis_title="Cumulative risk (%)",
     height=500,
     showlegend=True,
     hovermode='x unified'
@@ -403,7 +403,7 @@ for trace in fig_mi_cumulative.data:
 st.plotly_chart(fig_mi_cumulative, use_container_width=True)
 
 # 3. 脳卒中の累積リスク曲線（信頼区間付き）
-st.markdown("#### 🧠 脳卒中の累積リスク曲線（95%信頼区間付き）")
+st.markdown("#### 🧠 Cumulative Risk of Stroke (95% CI)")
 fig_stroke_cumulative = go.Figure()
 
 # 点推定値の線（85歳以上を薄色表示）
@@ -414,24 +414,24 @@ cutoff_year = max(0.0, 85.0 - float(age))
 cut_idx = int(np.searchsorted(_st_t, cutoff_year, side='right'))
 
 fig_stroke_cumulative.add_trace(go.Scatter(
-    x=_st_t[:cut_idx], y=_st_b[:cut_idx], mode='lines', name='現在のリスク因子',
+    x=_st_t[:cut_idx], y=_st_b[:cut_idx], mode='lines', name='Current risk factors',
     line=dict(color='#ffa726', width=3), showlegend=True,
-    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
+    hovertemplate='%{x:.1f} years: %{y:.2f}%<extra></extra>'
 ))
 fig_stroke_cumulative.add_trace(go.Scatter(
-    x=_st_t[cut_idx:], y=_st_b[cut_idx:], mode='lines', name='現在のリスク因子（≥85歳推定域）',
+    x=_st_t[cut_idx:], y=_st_b[cut_idx:], mode='lines', name='Current risk factors (estimated range: age ≥85)',
     line=dict(color='rgba(255,167,38,0.45)', width=3), showlegend=False,
-    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
+    hovertemplate='%{x:.1f} years: %{y:.2f}%<extra></extra>'
 ))
 fig_stroke_cumulative.add_trace(go.Scatter(
-    x=_st_t[:cut_idx], y=_st_tg[:cut_idx], mode='lines', name='目標達成時',
+    x=_st_t[:cut_idx], y=_st_tg[:cut_idx], mode='lines', name='At target',
     line=dict(color='#66bb6a', width=3), showlegend=True,
-    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
+    hovertemplate='%{x:.1f} years: %{y:.2f}%<extra></extra>'
 ))
 fig_stroke_cumulative.add_trace(go.Scatter(
-    x=_st_t[cut_idx:], y=_st_tg[cut_idx:], mode='lines', name='目標達成時（≥85歳推定域）',
+    x=_st_t[cut_idx:], y=_st_tg[cut_idx:], mode='lines', name='At target (estimated range: age ≥85)',
     line=dict(color='rgba(102,187,106,0.45)', width=3), showlegend=False,
-    hovertemplate='%{x:.1f}年: %{y:.2f}%<extra></extra>'
+    hovertemplate='%{x:.1f} years: %{y:.2f}%<extra></extra>'
 ))
 
 # 現在のリスク因子の信頼区間帯
@@ -451,7 +451,7 @@ fig_stroke_cumulative.add_trace(go.Scatter(
     fill='tonexty',
     mode='lines',
     line=dict(width=0),
-    name='現在のリスク因子 95%CI',
+    name='Current risk factors 95% CI',
     fillcolor='rgba(255,167,38,0.2)'
 ))
 
@@ -472,14 +472,14 @@ fig_stroke_cumulative.add_trace(go.Scatter(
     fill='tonexty',
     mode='lines',
     line=dict(width=0),
-    name='目標達成時 95%CI',
+    name='At target 95% CI',
     fillcolor='rgba(102,187,106,0.2)'
 ))
 
 fig_stroke_cumulative.update_layout(
-    title="脳卒中の累積リスク曲線（95%信頼区間付き）",
-    xaxis_title="年数",
-    yaxis_title="累積リスク（%）",
+    title="Cumulative Risk of Stroke (95% CI)",
+    xaxis_title="Years",
+    yaxis_title="Cumulative risk (%)",
     height=500,
     showlegend=True,
     hovermode='x unified'
@@ -494,65 +494,65 @@ for trace in fig_stroke_cumulative.data:
 st.plotly_chart(fig_stroke_cumulative, use_container_width=True)
 
 st.divider()
-with st.expander("出典・注記"):
+with st.expander("Sources and Notes"):
     st.markdown("""
-**ベースライン（日本）:**
-- 心筋梗塞: 宮城AMIレジストリー（2014年近似値、CSVに含む。正確な値が利用可能になったら置き換えてください）
-- 脳卒中: 滋賀脳卒中レジストリー（CSVに代表的な値）
-- 死亡率: 日本R5生命表 `qx` を **CSVの `qx` 列として直接利用**（推奨）。CSVが無い場合は一時的にGompertz近似を使用します。
+**Baseline data (Japan):**
+- Myocardial infarction: Miyagi AMI Registry (approximate 2014 values included in the CSV; replace when exact values become available)
+- Stroke: Shiga Stroke Registry (representative values in the CSV)
+- Mortality: Japanese 2023 life-table `qx` values are **used directly from the CSV `qx` column** (recommended). A temporary Gompertz approximation is used if the CSV is unavailable.
     """)
 
 # 一次予防モデル脚注（整形済み）
-with st.expander("一次予防モデル脚注（心筋梗塞・脳卒中・全死亡）"):
+with st.expander("Primary Prevention Model Notes (Myocardial Infarction, Stroke, and All-Cause Mortality)"):
     st.markdown("""
-**目的**: 外来で取得できる因子（SBP・LDL-C・HbA1c・喫煙・BMI・CKD[eGFR/アルブミン尿]）の是正による主要アウトカム（MI/Stroke/All-cause mortality）の累積リスク差を可視化。
+**Objective**: Visualize differences in the cumulative risk of major outcomes (MI, stroke, and all-cause mortality) associated with improving routinely available outpatient risk factors (SBP, LDL-C, HbA1c, smoking, BMI, and CKD [eGFR/albuminuria]).
 
-**ベースライン発症率**: 年齢・性別別CSVを補間して使用（死亡は生命表`qx`、MI/Strokeは年率を確率化）。
+**Baseline incidence**: Interpolated from age- and sex-specific CSV data (life-table `qx` for mortality; annual MI and stroke rates converted to probabilities).
 
-**累積計算（離散時間）**:
-- 年ごとに age=t年後の年齢へ更新
-- その年の年次発症確率: q_t = baseline(age_t, sex, outcome) × RR_total(age_t)
-- 累積: CumRisk_{t+1} = CumRisk_t + (1 − CumRisk_t) × q_t
+**Cumulative calculation (discrete time)**:
+- Update age each year to the age at year t
+- Annual event probability: q_t = baseline(age_t, sex, outcome) × RR_total(age_t)
+- Cumulative risk: CumRisk_{t+1} = CumRisk_t + (1 − CumRisk_t) × q_t
 
-**年齢減衰の考え方**: 相対効果は高齢で小さくなる傾向があるため、各因子の ln(RR) に係数 α(age) を掛けて調整。≥85歳は推定域として保守的に扱う（相対効果は弱め/ゼロ近傍）。
+**Age attenuation**: Because relative effects tend to diminish at older ages, each factor's ln(RR) is adjusted using a coefficient, α(age). Ages ≥85 are treated conservatively as an estimated range (weaker or near-zero relative effects).
 
-1) SBP（収縮期血圧）
-- 単位効果: 5 mmHg低下ごと HR≈0.91（Stroke寄りに強め、MIはやや弱め）
-- 年齢減衰: α_SBP(age)=1.0（≤75）→線形→0.0（85）→以降0.0
+1) SBP (systolic blood pressure)
+- Unit effect: HR ≈0.91 per 5 mmHg reduction (stronger for stroke and slightly weaker for MI)
+- Age attenuation: α_SBP(age)=1.0 (≤75) → linear decline → 0.0 (85) → 0.0 thereafter
 
 2) LDL-C
-- 単位効果: 1 mmol/L（≈38.7 mg/dL）低下ごと HR≈0.77
-- 年齢減衰: α_LDL(age)=1.0（≤85）→0.7（90）→以降0.7（軽い減衰）
+- Unit effect: HR ≈0.77 per 1 mmol/L (≈38.7 mg/dL) reduction
+- Age attenuation: α_LDL(age)=1.0 (≤85) → 0.7 (90) → 0.7 thereafter (mild attenuation)
 
-3) HbA1c（宏血管想定）
-- 方向性: 1%低下でRR<1だが控えめ。年齢減衰: α_A1c(age)=1.0（≤75）→0.0（85）→以降0.0
-- 微小血管は本モデル外（将来拡張）。
+3) HbA1c (macrovascular outcomes)
+- Direction of effect: a 1% reduction produces a modest RR <1. Age attenuation: α_A1c(age)=1.0 (≤75) → 0.0 (85) → 0.0 thereafter
+- Microvascular outcomes are outside the scope of this model (potential future extension).
 
-4) 喫煙
-- 現喫煙でHR上昇。禁煙後は HR(y)=1+(HR0−1)×exp(−k·y)（k≈0.15–0.2）で低下。
-- 年齢減衰は弱め（相対差は広い年齢で持続）。
+4) Smoking
+- Current smoking increases the HR. After cessation, it declines according to HR(y)=1+(HR0−1)×exp(−k·y) (k≈0.15–0.2).
+- Age attenuation is mild (relative differences persist across a broad age range).
 
-5) BMI（U字＋年齢シフト）
-- 最適BMI（谷）を年齢で 23.5→26.5 にシフト（40→80歳）。
-- 高BMI側: 若年ほど強く、超高齢で中立化。低BMI側: 高齢ほど不利。
-- 1BMIあたりの連続モデル: β=ln(RR5)/5, RR=exp(β×ΔBMI)。年次に再評価して乗算。極端入力は 0.5–2.0 にクリップ。
+5) BMI (U-shaped relationship with age shift)
+- The optimal BMI (nadir) shifts with age from 23.5 to 26.5 (ages 40 to 80).
+- High BMI: stronger effect at younger ages and neutralized at very advanced ages. Low BMI: more adverse at older ages.
+- Continuous model per BMI unit: β=ln(RR5)/5, RR=exp(β×ΔBMI). Re-evaluated and multiplied annually. Extreme inputs are clipped to 0.5–2.0.
 
-6) CKD（eGFR/アルブミン尿）
-- 点推定RR: eGFR ≥60=1.0、45–59=1.30、<45=1.80。ACR: A1=1.0、A2=1.35、A3=1.90。
-- 結合は初期は max(rr_eGFR, rr_ACR) を採用（上級設定で乗算＋上限可）。
-- 年齢減衰（lnRR×α）: A2/A3: 1.0→0.85（85）→0.80（>85）/ 低eGFR単独: 1.0→0.80→0.70 / 両者あり: 1.0→0.90→0.85。
-- アウトカム別調整: MI×0.8 / Stroke×1.0 / Mortality×1.1。
+6) CKD (eGFR/albuminuria)
+- Point-estimate RRs: eGFR ≥60=1.0, 45–59=1.30, <45=1.80. ACR: A1=1.0, A2=1.35, A3=1.90.
+- Initially combined using max(rr_eGFR, rr_ACR) (advanced settings may permit multiplication with a cap).
+- Age attenuation (lnRR×α): A2/A3: 1.0 → 0.85 (85) → 0.80 (>85); low eGFR alone: 1.0 → 0.80 → 0.70; both present: 1.0 → 0.90 → 0.85.
+- Outcome-specific adjustment: MI×0.8 / stroke×1.0 / mortality×1.1.
 
-**出力時の注記**
-- エビデンス範囲: 相対効果は概ね〜85歳までが実証域。85歳超は推定域として保守的に補正（本グラフでは≥85歳の線色を薄色表示）。
-- 二重カウント回避: 減塩などはSBP経由で反映。BMIと腹囲は同時に強くは使わない。
-- 絶対 vs 相対: 高齢では相対差は縮むが、絶対差（ARR）は維持・増大し得る。
+**Output notes**
+- Evidence range: Relative effects are generally supported through approximately age 85. Values above age 85 are conservatively adjusted as estimates (lines for ages ≥85 are shown in lighter colors).
+- Avoiding double counting: Effects such as sodium reduction are represented through SBP. BMI and waist circumference should not both be strongly weighted.
+- Absolute vs relative effects: Relative differences may narrow at older ages, while absolute risk reduction (ARR) may be maintained or increase.
 
-**代表参照（例）**
-- 血圧: SPRINT（NEJM 2015）、HYVET（NEJM 2008）、BPLTTC / Rahimi et al.（Lancet 2021）
-- 脂質: CTT 共同解析（Lancet 一連）、WOSCOPS（NEJM 1995）、ASCOT-LLA（Lancet 2003）、JUPITER（NEJM 2008）
-- 血糖: UKPDS、ADVANCE（NEJM 2008）、ACCORD（NEJM 2008/2010）、Selvinほか（Diabetes Care）
-- 喫煙: INTERHEART（Lancet 2004）、各国コホート/公衆衛生総報
-- BMI: Prospective Studies Collaboration（Lancet 2009）
-- CKD: CKD-PC（Lancet 2010/2012 ほか）、HOPE/RENAAL/IDNT（NEJM 2000–2001）、SPRINT/HYVET
+**Representative references (examples)**
+- Blood pressure: SPRINT (NEJM 2015), HYVET (NEJM 2008), BPLTTC / Rahimi et al. (Lancet 2021)
+- Lipids: CTT meta-analyses (Lancet series), WOSCOPS (NEJM 1995), ASCOT-LLA (Lancet 2003), JUPITER (NEJM 2008)
+- Glycemia: UKPDS, ADVANCE (NEJM 2008), ACCORD (NEJM 2008/2010), Selvin et al. (Diabetes Care)
+- Smoking: INTERHEART (Lancet 2004), national cohort studies/public health reports
+- BMI: Prospective Studies Collaboration (Lancet 2009)
+- CKD: CKD-PC (Lancet 2010/2012 and others), HOPE/RENAAL/IDNT (NEJM 2000–2001), SPRINT/HYVET
     """)
